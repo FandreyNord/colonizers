@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<style type="text/css">
+	body{
+	width: 100%;
+	margin: 0 auto;
+}
+header {
+    background: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+h1.name {
+    margin: 0;
+    padding: 40px;
+}
+.cell {
+	min-width: 20px;
+	border: 1px outset #040404;
+	min-height: 20px;
+	text-align: center;
+	font-size: 7px;
+}
+.point::before {
+	content: "";
+    color: black;
+    position: absolute;
+    height: 10px;
+    border-radius: 50%;
+    width: 10px;
+    background: red;
+}
+.field {
+/*	height: 1200px;
+	width: 1200px;*/
+    /* display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 600px 0px; */
+    /* background: url('C:/Users/108k1-35/Desktop/HTML/Group.png') no-repeat; */
+/*    background-size: 100% 100%;*/
+}
+.cell:hover {
+	background: #f9ead6;  
+} 
+.row {
+	display: flex;
+	flex-direction: row;
+}
+.inCell {
+    display: none;
+}
+.active{
+	pointer-events: none;
+}
+.hexagon__item {
+	margin: 0px;
+	position: absolute;
+	height:208px;
+	width:180px;
+	overflow: hidden;
+}
+.hexagon__inside {
+	height:100%;
+	width:100%;
+	overflow: hidden;
+}
+.hexagon__image{
+	position: relative;
+	width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: 100%;
+}
+.diceRoll {
+    position: absolute;
+    left: 30%;
+    top: 30%;
+    font-size: 50px;
+    width: 70px;
+    height: 70px;
+    background-color: wheat;
+    border-radius: 50%;
+    text-align: center;
+    box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-webkit-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+}
+.activeRoad60::after {
+	content: '' ;
+	position: absolute;
+	left: -10px;
+    top: -25px;
+    height: 47px;
+    width: 22px;
+/*    background: url(../HTML/img/road.png);*/
+    background-color: #b4de3e;
+    box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-webkit-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+}
+.activeRoad120::after {
+	content: '' ;
+	position: absolute;
+    left: -10px;
+    top: -30px;
+    height: 47px;
+    width: 22px;
+/*    background: url(../HTML/img/road.png);*/
+    background-color: #b4de3e;
+    box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-webkit-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+}
+.activeRoad0::after {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: -5px;
+    height: 47px;
+    width: 22px;
+/*    background: url(../HTML/img/road.png);*/
+    background-color: #b4de3e;
+    box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-webkit-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+}
+.activeSettlement::after {
+    content: '🏯';
+    /* background: url(../HTML/img/settlement.png); */
+    position: absolute;
+    top: -25px;
+    left: -25px;
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    font-size: 35px;
+    background-color: #b4de3e;
+    text-align: center;
+    box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-webkit-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+-moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+}
+.robbers::after {
+    content: '👺';
+    position: absolute;
+    height: 70px;
+    width: 70px;
+    background-color: white;
+    color: red;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 50px;
+    top: -33px;
+    left: -21px;
+    box-shadow: 0px 1px 0px 2px rgb(0 0 0) inset;
+    -webkit-box-shadow: 0px 1px 0px 2px rgb(0 0 0) inset;
+    -moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
+}
+
+</style>
+<body>
+	<div class="field"></div>
+	<button id="roll">rolling</button>
+	<button id="buildSettlement">Settlement</button>
+	<button id="buildRoad">Road</button>
+</body>
+<script type="text/javascript">
+	let pointEl
+	let side = 3
+	let settlementsObj = {}
+	let roadsObj = {}
+	var currentFigure = null
+	let hexImages = [
+	'clay',
+	'clay',
+	'clay',
+	'forest',
+	'forest',
+	'forest',
+	'forest',
+	'mounts',
+	'mounts',
+	'mounts',
+	'pasture',
+	'pasture',
+	'pasture',
+	'pasture',
+	'sand',
+	'wheat',
+	'wheat',
+	'wheat',
+	'wheat',
+	]
+
+	let hexNumbers = [
+	2,
+	3,
+	3,
+	4,
+	4,
+	5,
+	5,
+	6,
+	6,
+	8,
+	8,
+	9,
+	9,
+	10,
+	10,
+	11,
+	11,
+	12,
+	]
+
+	let usersArray = [
+	{
+		resources: {
+			clay:1000,
+			forest:1,
+			mounts:0,
+			pasture:1,
+			wheat:1,
+		},
+		devCards: [],
+	},
+	]
+	function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+	function hexArrayCreation(side){
+		let hexArray = []
+		let x = 500
+		let y = 500
+		let hex = {
+			position: [x,y],
+			dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+			corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+		}
+
+		hexArray.push(hex)
+
+
+		for (let turns = 1; turns<side; turns++){
+			y = y + 150
+			x = x - 90
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			for (let i = 0; i<turns; i++){
+				x = x + 180
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			}
+			for (let i = 0; i<turns; i++){
+				x = x + 90
+				y = y - 150
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			}
+			for (let i = 0; i<turns; i++){
+				x = x - 90
+				y = y - 150
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			}
+			for (let i = 0; i<turns; i++){
+				x = x - 180
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			}
+			for (let i = 0; i<turns; i++){
+				x = x - 90
+				y = y + 150
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'0deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			}
+			for (let i = 0; i<turns-1; i++){
+				x = x + 90
+				y = y + 150
+				hex = {
+				position: [x,y],
+				dots: [[x+45,y+75,'60deg'],[x+90,y,'0deg'],[x+45,y-75,'120deg'],[x-45,y-75,'60deg'],[x-90,y,'00deg'],[x-45,y+75,'120deg']],
+				corners: [[x,y+100],[x+90,y+50],[x+90,y-50],[x,y-100],[x-90,y-50],[x-90,y+50]],
+			}
+			hexArray.push(hex)
+			}
+			x = x + 90
+			y = y + 150
+		}
+		
+	return hexArray
+}
+	let hexArray = hexArrayCreation(side)
+
+	let mainObject = hexArray
+
+	function pointsArrayCriation(hexArray){
+		let dotsArray = []
+		let cornersArray = []
+		let pointsArray = []
+		let positionArray = []
+		hexArray.forEach(hexEl=>{
+			hexEl.dots.forEach(dotsEl=>{
+				dotsArray.push(dotsEl)
+			})
+			hexEl.corners.forEach(cornersEl=>{
+				cornersArray.push(cornersEl)
+			})		
+			positionArray.push(hexEl.position)
+		})
+		pointsArray.push(dotsArray)
+		pointsArray.push(cornersArray)
+		pointsArray.push(positionArray)
+		return pointsArray
+	}
+
+
+	let pointsArray = pointsArrayCriation(hexArray)
+	console.log(pointsArray)
+	function deleteExtraPoints(pointsArray) {
+		let noDeletedArray = pointsArray[0]
+        let a = pointsArray[0].map(el => {
+            let [a1, b1] = el
+            return [a1, b1]
+        })
+        let uniqueDots = deleteDuplicates(a)
+        uniqueDots = arrayRecovery(uniqueDots, noDeletedArray)
+        let uniqueCorners = deleteDuplicates(pointsArray[1])
+        let positionPoints = pointsArray[2]
+        return [uniqueDots, uniqueCorners, positionPoints]
+    }
+
+    function arrayRecovery(arr, noDelArr){
+    	arr.forEach(el=>{
+            noDelArr.forEach(noDelEl=>{
+                if (el.toString()===(noDelEl[0].toString()+','+noDelEl[1].toString())){
+                    el.push(noDelEl[2])
+                }
+            })
+        })
+        return arr
+    }
+
+    function deleteDuplicates(arr) {
+        let newArr = arr.map(el => el.toString())
+        let uniqueElements = [...new Set(newArr)]
+        return uniqueElements.map(el => el.split(","))
+    }
+
+pointsArray = deleteExtraPoints(pointsArray)
+
+	function pointsFieldCreation(pointsArray){
+		const field = document.querySelector('.field')
+		pointsArray.forEach(pointsArrayEl=>{
+			pointsArrayEl.forEach(el=>{
+				let row_div = document.createElement('div')
+				row_div.style.cssText=`z-index:1;font-size: 100px;position: absolute; left: ${el[0]}px; top: ${el[1]}px;`
+				row_div.classList.add('point')
+				if(pointsArrayEl.join('')===pointsArray[1].join('')){
+					row_div.classList.add('settlement')
+				}
+				if(pointsArrayEl.join('')===pointsArray[0].join('')){
+					row_div.style.cssText+=`transform: rotate(${el[2]});`
+					row_div.classList.add('road')
+				}
+				row_div.id = `${el[0]},${el[1]}`
+				field.appendChild(row_div)
+
+			})
+		})
+	}
+
+	pointsFieldCreation(pointsArray)
+
+	function hexFieldCreation(pointsArray, mainObject,hexNumbers){
+		const field = document.querySelector('.field')
+		pointsArray[2].forEach(el=>{
+			let count = getRandomIntInclusive(0,hexImages.length-1)
+			
+			let hexagon__item = document.createElement('div')
+			hexagon__item.classList.add('hexagon__item')
+			hexagon__item.style.left = `${el[0]-90}px`
+			hexagon__item.style.top = `${el[1]-100}px`
+			hexagon__item.style.transform = 'rotate(0deg)'
+
+			let hexagon__inside = document.createElement('div')
+			hexagon__inside.classList.add('hexagon__inside')
+			hexagon__inside.style.transform = 'rotate(120deg)'
+
+			let hexagon__image = document.createElement('div')
+			hexagon__image.classList.add('hexagon__image')
+			hexagon__image.style.transform = 'rotate(-60deg)'
+			let bg = 'background-image'
+			hexagon__image.style.cssText += `background-image: url('../HTML/img/${hexImages[count]}.png');`
+
+			mainObject.forEach(hex =>{
+				let newArr = hex.position.toString()
+				if (newArr === `${el[0]},${el[1]}`){
+					let territory = hexImages[count]
+					hex['territory']=territory
+					if(hexImages[count]!=='sand'){
+						let diceRoll = document.createElement('div')
+						diceRoll.classList.add('diceRoll')
+
+						let number = getRandomIntInclusive(0,hexNumbers.length-1)
+						if (hexNumbers[number]!==9&&hexNumbers[number]!==6){
+							diceRoll.innerHTML+=`${hexNumbers[number]}`
+						}
+						else{
+							diceRoll.innerHTML+=`${hexNumbers[number]}.`
+						}
+						hex['robbers']=0
+						hex['diceRoll']=hexNumbers[number]
+						hexNumbers.splice(number,1)
+						hexagon__image.appendChild(diceRoll)
+					}
+					else{
+						hex['diceRoll']=7
+						hex['robbers']=1
+						let el = document.getElementById(String(hex.position))
+						el.classList.add('robbers')
+					}
+				}
+			})
+
+			hexImages.splice(count,1)
+
+
+			hexagon__inside.appendChild(hexagon__image)
+			hexagon__item.appendChild(hexagon__inside)
+
+
+			field.appendChild(hexagon__item)
+		})
+	}
+
+	hexFieldCreation(pointsArray,mainObject,hexNumbers)
+
+
+	document.querySelector("#roll").onclick = function(){
+  	let dice__1 = getRandomIntInclusive(1,6)
+  	let dice__2 = getRandomIntInclusive(1,6)
+  	let sum__dice = dice__1+dice__2
+  	console.log(sum__dice)
+	if (sum__dice!=7){
+	  	mainObject.forEach(hex=>{
+	  		if (hex.diceRoll===sum__dice&&hex.robbers!=1){
+	  			if(hex.settlements){
+	  				hex.settlements.forEach(obj=>{
+	  					usersArray.forEach((user__el,i)=>{
+	  						if(obj.user===i){
+	  							let hexTerritory = hex.territory
+	  							user__el.resources[hexTerritory]++
+	  						}
+	  					})
+	  				})
+	  			}
+	  		}
+	  	})
+	}
+	else{
+		usersArray.forEach(user=>{
+
+			let resourcesSum = user.resources.clay+user.resources.forest+user.resources.wheat+user.resources.pasture+user.resources.mounts
+			if(resourcesSum>7){
+				console.log('delete some cards')
+			}
+		})
+		currentFigure = 'centralPoint'
+	}
+}
+	
+
+	document.querySelector("#buildSettlement").onclick = function(){
+		currentFigure = 'settlement'
+	}
+
+	document.querySelector("#buildRoad").onclick = function(){
+		currentFigure = 'road'
+	}
+
+	document.querySelector('.field').addEventListener('click', function(event){
+ 	let elId = event.target.id
+ 	switch(currentFigure) {
+		case 'settlement':
+			console.log(mainObject)
+			if(distanceCheckSettlement(elId, settlementsObj)){
+				if (usersArray[0].resources.forest-1>=0&&usersArray[0].resources.clay-1>=0&&usersArray[0].resources.pasture-1>=0&&usersArray[0].resources.wheat-1>=0){
+					pointEl = document.getElementById(elId)
+					settlementsObj = coordinatesInArray(elId,pointsArray[1],settlementsObj)
+					currentFigure = null
+					if(pointEl.classList.contains('settlement')){
+						if(!pointEl.classList.contains('activeSettlement')){
+							usersArray[0].resources.forest--
+							usersArray[0].resources.clay--
+							usersArray[0].resources.pasture--
+							usersArray[0].resources.wheat--
+							pointEl.classList.add('activeSettlement')
+							fillingMainObject(mainObject,elId)
+						}
+					}
+				}
+			}
+		break
+
+		case 'road':
+			if (usersArray[0].resources.forest-1>=0&&usersArray[0].resources.clay-1>=0){
+				pointEl = document.getElementById(elId)
+				roadObj = coordinatesInArray(elId,pointsArray[0],roadsObj)
+				currentFigure = null
+				if(pointEl.classList.contains('road')){
+					if(!pointEl.classList.contains('activeRoad')){
+						usersArray[0].resources.forest--
+						usersArray[0].resources.clay--
+						let rotate = pointEl.style.transform
+						pointEl.classList.add('activeRoad')
+						switch(rotate){
+							case 'rotate(60deg)':
+								pointEl.classList.add('activeRoad60')
+								break
+
+							case 'rotate(120deg)':
+								pointEl.classList.add('activeRoad120')
+								break
+
+							case 'rotate(0deg)':
+								pointEl.classList.add('activeRoad0')
+								break
+						}
+						fillingMainObject(mainObject,elId)
+					}
+				}
+			}
+		break
+
+		case 'centralPoint':
+			mainObject.forEach(el=>{
+				if(el.robbers===1){
+					el.robbers=0
+					let hexEl = document.getElementById(String(el.position))
+					hexEl.classList.remove('robbers')
+				}
+			})
+			mainObject.forEach(el=>{
+				if (String(el.position)===elId){
+					el.robbers=1
+					let hexEl = document.getElementById(String(el.position))
+					hexEl.classList.add('robbers')
+				}
+				currentFigure = null
+			})
+		break
+	}
+ })
+
+	function coordinatesInArray(str,arr,obj){
+		let newArr = arr.map(el => el.toString())
+		let flag = true
+		newArr.forEach(el=>{
+			if(el===str){
+				Object.keys(obj).forEach(key=>{
+					if (key===str)
+						flag = !flag
+				})
+				if (flag){
+					obj[str]='active'
+				}
+			}
+		})
+		return obj
+	}
+
+	function fillingMainObject(mainObject,id){
+		mainObject.forEach(el=>{
+			Object.keys(el).forEach(key=>{
+				switch (key) {
+					case 'dots':
+						el[key].forEach(point=>{
+							if (point.join(',')===id){
+								if (el['roads']){
+									let road = {
+										'user': 0,
+										'position':id.split(','),
+									}
+									el['roads'].push(road)
+								}
+								else{
+									let road = {
+										'user': 0,
+										'position':id.split(','),
+									}
+									el['roads']=[road]
+									}
+							}
+						})
+						break
+
+					case 'corners':
+						el[key].forEach(point=>{
+							if (point.join(',')===id){
+								if (el['settlements']){
+									let settlement = {
+										'user': 0,
+										'position':id.split(','),
+									}
+									el['settlements'].push(settlement)
+								}
+								else{
+									let settlement = {
+										'user': 0,
+										'position':id.split(','),
+									}
+									el['settlements']=[settlement]
+									}
+							}
+						})
+						break
+
+					default:
+						break
+				}
+			})
+		})
+	}
+
+	function distanceCheckSettlement(id, obj){
+		id = id.split(',')
+		let flag = true
+		let mainX = id[0]
+		let mainY = id[1]
+		Object.keys(obj).forEach(key=>{
+			let arr = key.split(',')
+			let x = arr[0]
+			let y = arr[1]
+			let vectorX = Math.abs(mainX-x)
+			let vectorY = Math.abs(mainY-y)
+			if((Math.sqrt(Math.pow(vectorX,2)+Math.pow(vectorY,2)))<=103){
+				flag = false
+			}
+		})
+		return flag
+	}
+	console.log(mainObject)
+</script>
+</html>
