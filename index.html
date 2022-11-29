@@ -165,13 +165,24 @@ h1.name {
     -webkit-box-shadow: 0px 1px 0px 2px rgb(0 0 0) inset;
     -moz-box-shadow: 0px 1px 0px 2px rgba(0,0,0,1) inset;
 }
-
+.dice{
+	border: 1px solid black;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	font-size: 30px;
+	margin-top: 10px;
+}
 </style>
 <body>
 	<div class="field"></div>
 	<button id="roll">rolling</button>
 	<button id="buildSettlement">Settlement</button>
 	<button id="buildRoad">Road</button>
+
+	<div class="1d6 dice"></div>
+	<div class="2d6 dice"></div>
+	<div class="users__cards"></div>
 </body>
 <script type="text/javascript">
 	let pointEl
@@ -477,6 +488,11 @@ pointsArray = deleteExtraPoints(pointsArray)
   	let dice__1 = getRandomIntInclusive(1,6)
   	let dice__2 = getRandomIntInclusive(1,6)
   	let sum__dice = dice__1+dice__2
+  	let HTML1Dice = document.getElementsByClassName('1d6')
+  	console.log(HTML1Dice)
+  	let HTML2Dice = document.getElementsByClassName('2d6')
+  	HTML1Dice[0].innerHTML=dice__1
+  	HTML2Dice[0].innerHTML=dice__2
   	console.log(sum__dice)
 	if (sum__dice!=7){
 	  	mainObject.forEach(hex=>{
@@ -504,6 +520,7 @@ pointsArray = deleteExtraPoints(pointsArray)
 		})
 		currentFigure = 'centralPoint'
 	}
+	updateResourcesList(usersArray)
 }
 	
 
@@ -533,6 +550,8 @@ pointsArray = deleteExtraPoints(pointsArray)
 							usersArray[0].resources.wheat--
 							pointEl.classList.add('activeSettlement')
 							fillingMainObject(mainObject,elId)
+							updateResourcesList(usersArray)
+							users__cards.innerHTML = usersArray[0]
 						}
 					}
 				}
@@ -564,6 +583,7 @@ pointsArray = deleteExtraPoints(pointsArray)
 								break
 						}
 						fillingMainObject(mainObject,elId)
+						updateResourcesList(usersArray)
 					}
 				}
 			}
@@ -676,6 +696,15 @@ pointsArray = deleteExtraPoints(pointsArray)
 		})
 		return flag
 	}
-	console.log(mainObject)
+	
+	function updateResourcesList(usersArray){
+		let users__cards = document.getElementsByClassName('users__cards')
+		users__cards[0].innerHTML = ''
+		usersArray.forEach(user=>{
+			Object.keys(user.resources).forEach(key=>{
+				users__cards[0].innerHTML += `${key}:${user.resources[key]}<br>`
+			})
+		})
+	}
 </script>
 </html>
