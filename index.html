@@ -252,6 +252,7 @@ h1.name {
 			wheat:2,
 		},
 		devCards: [],
+		color: '#b4de3e'
 	},
 	{
 		resources: {
@@ -262,6 +263,7 @@ h1.name {
 			wheat:2,
 		},
 		devCards: [],
+		color: '#3e6ade'	
 	},
 	{
 		resources: {
@@ -272,6 +274,7 @@ h1.name {
 			wheat:2,
 		},
 		devCards: [],
+		color: '#d5bcd7'
 	},
 	]
 	function getRandomIntInclusive(min, max) {
@@ -569,7 +572,7 @@ pointsArray = deleteExtraPoints(pointsArray)
 	}
 
 	document.querySelector("#endMove").onclick = function(){
-		if (usersArray.length===userNumber){
+		if (usersArray.length-1===userNumber){
 			userNumber=0
 		}
 		else{
