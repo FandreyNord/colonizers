@@ -173,16 +173,23 @@ h1.name {
 	font-size: 30px;
 	margin-top: 10px;
 }
+.container{
+	position: relative;
+	width: 800px;
+	margin: 0 auto;
+}
 </style>
 <body>
-	<div class="field"></div>
-	<button id="roll">rolling</button>
-	<button id="buildSettlement">Settlement</button>
-	<button id="buildRoad">Road</button>
+	<div class="container">
+		<div class="field"></div>
+		<button id="roll">rolling</button>
+		<button id="buildSettlement">Settlement</button>
+		<button id="buildRoad">Road</button>
 
-	<div class="1d6 dice"></div>
-	<div class="2d6 dice"></div>
-	<div class="users__cards"></div>
+		<div class="1d6 dice"></div>
+		<div class="2d6 dice"></div>
+		<div class="users__cards"></div>
+	</div>
 </body>
 <script type="text/javascript">
 	let pointEl
@@ -413,6 +420,9 @@ pointsArray = deleteExtraPoints(pointsArray)
 				row_div.id = `${el[0]},${el[1]}`
 				field.appendChild(row_div)
 
+				if(pointsArrayEl.join('')===pointsArray[2].join('')){
+					row_div.classList.add('centralPoint')
+				}
 			})
 		})
 	}
@@ -512,12 +522,17 @@ pointsArray = deleteExtraPoints(pointsArray)
 	}
 	else{
 		usersArray.forEach(user=>{
-
 			let resourcesSum = user.resources.clay+user.resources.forest+user.resources.wheat+user.resources.pasture+user.resources.mounts
 			if(resourcesSum>7){
 				console.log('delete some cards')
 			}
 		})
+		let buildSettlement = document.getElementById('buildSettlement')
+		buildSettlement.style.display = 'none'
+		let buildRoad = document.getElementById('buildRoad')
+		buildRoad.style.display = 'none'
+		let roll = document.getElementById('roll')
+		roll.style.display = 'none'
 		currentFigure = 'centralPoint'
 	}
 	updateResourcesList(usersArray)
@@ -590,21 +605,30 @@ pointsArray = deleteExtraPoints(pointsArray)
 		break
 
 		case 'centralPoint':
-			mainObject.forEach(el=>{
-				if(el.robbers===1){
-					el.robbers=0
-					let hexEl = document.getElementById(String(el.position))
-					hexEl.classList.remove('robbers')
-				}
-			})
-			mainObject.forEach(el=>{
-				if (String(el.position)===elId){
-					el.robbers=1
-					let hexEl = document.getElementById(String(el.position))
-					hexEl.classList.add('robbers')
-				}
-				currentFigure = null
-			})
+			let roll = document.getElementById('roll')
+			let buildSettlement = document.getElementById('buildSettlement')
+			let buildRoad = document.getElementById('buildRoad')
+			pointEl = document.getElementById(elId)
+			if (pointEl.classList.contains('centralPoint')){
+				mainObject.forEach(el=>{
+					if(el.robbers===1){
+						el.robbers=0
+						let hexEl = document.getElementById(String(el.position))
+						hexEl.classList.remove('robbers')
+					}
+				})
+				mainObject.forEach(el=>{
+					if (String(el.position)===elId){
+						el.robbers=1
+						let hexEl = document.getElementById(String(el.position))
+						hexEl.classList.add('robbers')
+					}
+					roll.style.cssText = ''
+					buildSettlement.style.cssText = ''
+					buildRoad.style.cssText = ''
+					currentFigure = null
+				})
+			}
 		break
 	}
  })
