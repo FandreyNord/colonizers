@@ -185,13 +185,15 @@ h1.name {
 		<button id="roll">rolling</button>
 		<button id="buildSettlement">Settlement</button>
 		<button id="buildRoad">Road</button>
+		<button id="endMove">end</button>
 
 		<div class="1d6 dice"></div>
 		<div class="2d6 dice"></div>
-		<div class="users__cards"></div>
+		<div class="users__cards" id="users__cards"></div>
 	</div>
 </body>
 <script type="text/javascript">
+	var userNumber = 0
 	let pointEl
 	let side = 3
 	let settlementsObj = {}
@@ -243,11 +245,31 @@ h1.name {
 	let usersArray = [
 	{
 		resources: {
-			clay:1000,
-			forest:1,
+			clay:4,
+			forest:4,
 			mounts:0,
-			pasture:1,
-			wheat:1,
+			pasture:2,
+			wheat:2,
+		},
+		devCards: [],
+	},
+	{
+		resources: {
+			clay:4,
+			forest:4,
+			mounts:0,
+			pasture:2,
+			wheat:2,
+		},
+		devCards: [],
+	},
+	{
+		resources: {
+			clay:4,
+			forest:4,
+			mounts:0,
+			pasture:2,
+			wheat:2,
 		},
 		devCards: [],
 	},
@@ -370,7 +392,6 @@ h1.name {
 
 
 	let pointsArray = pointsArrayCriation(hexArray)
-	console.log(pointsArray)
 	function deleteExtraPoints(pointsArray) {
 		let noDeletedArray = pointsArray[0]
         let a = pointsArray[0].map(el => {
@@ -499,11 +520,9 @@ pointsArray = deleteExtraPoints(pointsArray)
   	let dice__2 = getRandomIntInclusive(1,6)
   	let sum__dice = dice__1+dice__2
   	let HTML1Dice = document.getElementsByClassName('1d6')
-  	console.log(HTML1Dice)
   	let HTML2Dice = document.getElementsByClassName('2d6')
   	HTML1Dice[0].innerHTML=dice__1
   	HTML2Dice[0].innerHTML=dice__2
-  	console.log(sum__dice)
 	if (sum__dice!=7){
 	  	mainObject.forEach(hex=>{
 	  		if (hex.diceRoll===sum__dice&&hex.robbers!=1){
@@ -533,6 +552,8 @@ pointsArray = deleteExtraPoints(pointsArray)
 		buildRoad.style.display = 'none'
 		let roll = document.getElementById('roll')
 		roll.style.display = 'none'
+		let end = document.getElementById('endMove')
+		end.style.display = 'none'
 		currentFigure = 'centralPoint'
 	}
 	updateResourcesList(usersArray)
@@ -547,26 +568,33 @@ pointsArray = deleteExtraPoints(pointsArray)
 		currentFigure = 'road'
 	}
 
+	document.querySelector("#endMove").onclick = function(){
+		if (usersArray.length===userNumber){
+			userNumber=0
+		}
+		else{
+			userNumber++
+		}
+		updateResourcesList(usersArray)
+	}
 	document.querySelector('.field').addEventListener('click', function(event){
  	let elId = event.target.id
  	switch(currentFigure) {
 		case 'settlement':
-			console.log(mainObject)
 			if(distanceCheckSettlement(elId, settlementsObj)){
-				if (usersArray[0].resources.forest-1>=0&&usersArray[0].resources.clay-1>=0&&usersArray[0].resources.pasture-1>=0&&usersArray[0].resources.wheat-1>=0){
+				if (usersArray[userNumber].resources.forest-1>=0&&usersArray[userNumber].resources.clay-1>=0&&usersArray[userNumber].resources.pasture-1>=0&&usersArray[userNumber].resources.wheat-1>=0){
 					pointEl = document.getElementById(elId)
 					settlementsObj = coordinatesInArray(elId,pointsArray[1],settlementsObj)
 					currentFigure = null
 					if(pointEl.classList.contains('settlement')){
 						if(!pointEl.classList.contains('activeSettlement')){
-							usersArray[0].resources.forest--
-							usersArray[0].resources.clay--
-							usersArray[0].resources.pasture--
-							usersArray[0].resources.wheat--
+							usersArray[userNumber].resources.forest--
+							usersArray[userNumber].resources.clay--
+							usersArray[userNumber].resources.pasture--
+							usersArray[userNumber].resources.wheat--
 							pointEl.classList.add('activeSettlement')
 							fillingMainObject(mainObject,elId)
 							updateResourcesList(usersArray)
-							users__cards.innerHTML = usersArray[0]
 						}
 					}
 				}
@@ -574,14 +602,14 @@ pointsArray = deleteExtraPoints(pointsArray)
 		break
 
 		case 'road':
-			if (usersArray[0].resources.forest-1>=0&&usersArray[0].resources.clay-1>=0){
+			if (usersArray[userNumber].resources.forest-1>=0&&usersArray[userNumber].resources.clay-1>=0){
 				pointEl = document.getElementById(elId)
 				roadObj = coordinatesInArray(elId,pointsArray[0],roadsObj)
 				currentFigure = null
 				if(pointEl.classList.contains('road')){
 					if(!pointEl.classList.contains('activeRoad')){
-						usersArray[0].resources.forest--
-						usersArray[0].resources.clay--
+						usersArray[userNumber].resources.forest--
+						usersArray[userNumber].resources.clay--
 						let rotate = pointEl.style.transform
 						pointEl.classList.add('activeRoad')
 						switch(rotate){
@@ -608,6 +636,7 @@ pointsArray = deleteExtraPoints(pointsArray)
 			let roll = document.getElementById('roll')
 			let buildSettlement = document.getElementById('buildSettlement')
 			let buildRoad = document.getElementById('buildRoad')
+			let end = document.getElementById('endMove')
 			pointEl = document.getElementById(elId)
 			if (pointEl.classList.contains('centralPoint')){
 				mainObject.forEach(el=>{
@@ -626,6 +655,7 @@ pointsArray = deleteExtraPoints(pointsArray)
 					roll.style.cssText = ''
 					buildSettlement.style.cssText = ''
 					buildRoad.style.cssText = ''
+					end.style.cssText = ''
 					currentFigure = null
 				})
 			}
@@ -722,12 +752,11 @@ pointsArray = deleteExtraPoints(pointsArray)
 	}
 	
 	function updateResourcesList(usersArray){
-		let users__cards = document.getElementsByClassName('users__cards')
-		users__cards[0].innerHTML = ''
-		usersArray.forEach(user=>{
-			Object.keys(user.resources).forEach(key=>{
-				users__cards[0].innerHTML += `${key}:${user.resources[key]}<br>`
-			})
+		let users__cards = document.getElementById('users__cards')
+		users__cards.innerHTML = ''
+
+		Object.keys(usersArray[userNumber].resources).forEach(key=>{
+			users__cards.innerHTML+=`${key}:${usersArray[userNumber].resources[key]}<br>`
 		})
 	}
 </script>
